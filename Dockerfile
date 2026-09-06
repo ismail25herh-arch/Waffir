@@ -4,7 +4,7 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public \
     COMPOSER_ALLOW_SUPERUSER=1
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libpq-dev libzip-dev \
+    && apt-get install -y --no-install-recommends git unzip libpq-dev libzip-dev libonig-dev \
     && docker-php-ext-install -j"$(nproc)" bcmath mbstring opcache pdo_pgsql zip \
     && a2enmod rewrite headers \
     && sed -ri "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
