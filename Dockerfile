@@ -4,7 +4,7 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public \
     COMPOSER_ALLOW_SUPERUSER=1
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git unzip libpq-dev libzip-dev \
+    && apt-get install -y --no-install-recommends git unzip libpq-dev libzip-dev libonig-dev \
     && docker-php-ext-install -j"$(nproc)" bcmath mbstring opcache pdo_pgsql zip \
     && a2dismod mpm_event mpm_worker || true \
     && a2enmod mpm_prefork \
@@ -17,9 +17,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader --no-scripts
 
 COPY . .
+
+RUN composer run-script post-autoload-dump --no-interaction
 
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
